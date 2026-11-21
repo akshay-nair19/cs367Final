@@ -50,13 +50,22 @@ cd /d "%USERPROFILE%\wuftpd-lab"
 "C:\Program Files\qemu\qemu-system-i386.exe" -machine pc -accel tcg -cpu pentium -m 128 -drive file=redhat62.qcow2,format=qcow2,if=ide -nic none
 ```
 
-**If startup repeatedly prints `hda: lost interrupt`:** Hold Shift as LILO starts and type `linux noapic` at its `boot:` prompt. This got our VM to the login screen. To keep the setting, log in as root, back up the configuration with `cp -p /etc/lilo.conf /etc/lilo.conf.bak`, then edit `/etc/lilo.conf`. In our configuration we added this line above the first `image=` entry:
+### Fix a repeating `hda: lost interrupt` message
 
-```text
-append="noapic"
-```
+As LILO starts. At the `boot:` prompt, type `linux noapic` and press **Enter**. This worked for one boot on our VM. To save the setting for future boots, log in as `root` inside Red Hat and edit the file manually:
 
-Run `/sbin/lilo`. Our installation printed `Added linux *` and `Added linux-up`. After a successful update, run `reboot` and allow the VM to boot automatically.
+1. Back up the original file once with `cp -p /etc/lilo.conf /etc/lilo.conf.bak`.
+2. Run `vi +1 /etc/lilo.conf` to open the file at the first line.
+3. Press uppercase **O** (Shift+O). This opens a blank line above the first line and puts you in typing mode. Type exactly:
+
+   ```text
+   append="noapic"
+   ```
+
+4. Press **Esc**, type `:wq`, and press **Enter** to save and exit.
+5. Run `head -5 /etc/lilo.conf`. Check that the first line reads `append="noapic"` on its own.
+6. Run `/sbin/lilo` to apply the change. On our VM it printed `Added linux *` and `Added linux-up`. If it reports an error, resolve it before rebooting.
+7. Run `reboot` and let LILO start automatically. Reaching the login prompt without typing a boot option confirms the fix.
 
 ## Verify the installation
 
@@ -69,8 +78,6 @@ rpm -q anonftp
 ```
 
 Our VM reported Red Hat Linux 6.2, `wu-ftpd-2.6.0-3`, and `anonftp-3.0-3`. In our local FTP check, the server returned `230 Guest login ok` to an anonymous login on `127.0.0.1` inside Red Hat.
-
-We also observed a message travel from Red Hat's virtual serial port to Ubuntu in WSL 2 in a separate test. The offline startup command above does not configure that serial connection. FTP access from WSL and CVE reproduction remain untested.
 
 ## Shut down and save a clean copy
 
