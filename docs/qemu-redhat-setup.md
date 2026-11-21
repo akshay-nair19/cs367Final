@@ -31,6 +31,26 @@ Start the installer. Paste this as one line:
 "C:\Program Files\qemu\qemu-system-i386.exe" -machine pc -accel tcg -cpu pentium -m 128 -drive file=redhat62.qcow2,format=qcow2,if=ide -cdrom redhat-6.2-i386.iso -boot once=d -nic none
 ```
 
+### Reading the QEMU command
+
+This is one Windows command. The quoted path starts a program; everything after it describes the virtual computer to build for this run.
+
+| Part | What it does |
+|---|---|
+| `"C:\Program Files\qemu\qemu-system-i386.exe"` | Runs QEMU's emulator for a 32-bit x86 PC. The quotes keep the space in `Program Files` inside the path. |
+| `-machine pc` | Selects the emulated PC motherboard and chipset. |
+| `-accel tcg` | Uses QEMU's software CPU emulator, called the Tiny Code Generator, to execute the guest's instructions. |
+| `-cpu pentium` | Presents a Pentium processor to Red Hat, regardless of the physical processor model in the laptop. |
+| `-m 128` | Gives the running VM 128 MiB of RAM. |
+| `-drive file=redhat62.qcow2,format=qcow2,if=ide` | Attaches the previously created virtual hard disk. `file=` names the file, `format=` tells QEMU how to read it, and `if=ide` presents it to Red Hat as an IDE drive. The installed system and saved files live here. |
+| `-cdrom redhat-6.2-i386.iso` | Inserts the installation image into a virtual CD drive. |
+| `-boot once=d` | Boots from the virtual CD for the first startup of this run. Here `d` means CD-ROM. After a guest reboot, QEMU returns to its normal boot order. |
+| `-nic none` | Starts the guest without a network adapter. Programs inside Red Hat can still talk to each other using `127.0.0.1`. |
+
+Both filenames are relative to the current folder, which is why the Windows instructions begin with `cd /d "%USERPROFILE%\wuftpd-lab"`. After installation, the normal startup command below keeps the same disk and omits `-cdrom` and `-boot once=d`.
+
+[QEMU command-line reference](https://www.qemu.org/docs/master/system/invocation.html)
+
 At the CD's `boot:` prompt, enter `text`. Choose **Custom** and **Disk Druid**. For the new 4 GB virtual disk (`hda`), use:
 
 | Mount point | Type | Size |
@@ -52,11 +72,11 @@ cd /d "%USERPROFILE%\wuftpd-lab"
 
 ### Fix a repeating `hda: lost interrupt` message
 
-As LILO starts. At the `boot:` prompt, type `linux noapic` and press **Enter**. This worked for one boot on our VM. To save the setting for future boots, log in as `root` inside Red Hat and edit the file manually:
+Hold **Shift** as LILO starts. At the `boot:` prompt, type `linux noapic` and press **Enter**. This worked for one boot on our VM. To save the setting for future boots, log in as `root` inside Red Hat and edit the file manually:
 
 1. Back up the original file once with `cp -p /etc/lilo.conf /etc/lilo.conf.bak`.
 2. Run `vi +1 /etc/lilo.conf` to open the file at the first line.
-3. Press uppercase **O** (Shift+O). This opens a blank line above the first line and puts you in typing mode. Type exactly:
+3. Press **Shift+O** (capital letter O). This opens a blank line above the first line and puts you in insert mode. Type exactly:
 
    ```text
    append="noapic"

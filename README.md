@@ -14,3 +14,5 @@ The vulnerability itself has still not been tested
 
 
 [Set up and run the Red Hat VM on Windows](docs/qemu-redhat-setup.md)
+
+[Why we chose this lab setup](docs/lab-design-decisions.md)
