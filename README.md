@@ -11,3 +11,6 @@ We are studying CVE-2000-0573 in the WU-FTPD file transfer server.
 - Verified that Ubuntu in WSL 2 Received a message Over QEMU's serial port
 
 The vulnerability itself has still not been tested
+
+
+[Set up and run the Red Hat VM on Windows](docs/qemu-redhat-setup.md)
