@@ -1,0 +1,3 @@
+# Keep virtual disks and installer images out of the repository
+*.qcow2
+*.iso
